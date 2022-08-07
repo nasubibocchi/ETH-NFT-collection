@@ -5,16 +5,20 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "hardhat/console.sol";
 
+import "./SendMoneyContract.sol";
+
 // Base64.solコントラクトからSVGとJSONをBase64に変換する関数をインポートします。
 import {Base64} from "./libraries/Base64.sol";
 
-contract MyEpicNFT is ERC721URIStorage {
+contract MyEpicNFT is ERC721URIStorage, SendMoneyContract {
     // OpenZeppelin が tokenIds を簡単に追跡するために提供するライブラリを呼び出しています
     using Counters for Counters.Counter;
 
     // _tokenIdsを初期化（_tokenIds = 0）
     Counters.Counter private _tokenIds;
     Counters.Counter public nftCount;
+
+    uint256 nftCost = 1 wei;
 
     // SVGコードを作成します。
     // 変更されるのは、表示される単語だけです。
@@ -118,6 +122,11 @@ contract MyEpicNFT is ERC721URIStorage {
         require(nftCount.current() > 0, "no NFT remains");
         // 現在のtokenIdを取得します。tokenIdは0から始まります。
         uint256 newItemId = _tokenIds.current();
+
+        bool paymentResult = sendMoneyToOwner(nftCost);
+        if (!paymentResult) {
+            return;
+        }
 
         // 3つの配列からそれぞれ1つの単語をランダムに取り出します。
         string memory first = pickRandomFirstWord(newItemId);
