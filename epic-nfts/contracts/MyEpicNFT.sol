@@ -48,7 +48,7 @@ contract MyEpicNFT is ERC721URIStorage {
         "hungry"
     ];
 
-    event NewEpicNFTMinted(address sender, uint256 tokenId);
+    event NewEpicNFTMinted(address sender, uint256 tokenId, uint256 nftCount);
 
     // NFT トークンの名前とそのシンボルを渡します。
     constructor() ERC721("SquareNFT", "SQUARE") {
@@ -182,8 +182,9 @@ contract MyEpicNFT is ERC721URIStorage {
         _tokenIds.increment();
         // Mint できる NFT の個数を減らす
         nftCount.decrement();
-        console.log("nftCount: %s", Strings.toString(nftCount.current()));
+        uint256 currentNftCount = nftCount.current();
+        console.log("nftCount: %s", Strings.toString(currentNftCount));
 
-        emit NewEpicNFTMinted(msg.sender, newItemId);
+        emit NewEpicNFTMinted(msg.sender, newItemId, currentNftCount);
     }
 }
