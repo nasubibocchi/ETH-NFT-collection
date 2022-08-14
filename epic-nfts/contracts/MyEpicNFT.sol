@@ -193,9 +193,16 @@ contract MyEpicNFT is ERC721URIStorage {
         emit NewEpicNFTMinted(msg.sender, newItemId, currentNftCount);
     }
 
-    // makeAnEpicNFT() が実行されたときにownerAddressが msg.value(=nftCost)受け取る
+    // ownerAddressが msg.value(=nftCost)受け取る
     receive() external payable {
         require(msg.value == nftCost, "Not payed full money");
+
+        // makeAnEpicNFT() が成功した時にだけ呼ばれるようにする
+        (bool success, ) = ownerAddress.call{value: msg.value}(
+            abi.encodeWithSignature("makeAnEpicNFT()")
+        );
+        require(success, "Payment failed");
+
         emit Received(msg.sender, msg.value);
     }
 
