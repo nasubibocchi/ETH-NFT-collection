@@ -16,6 +16,9 @@ contract MyEpicNFT is ERC721URIStorage {
     Counters.Counter private _tokenIds;
     Counters.Counter public nftCount;
 
+    uint256 nftCost = 1 wei;
+    address payable ownerAddress;
+
     // SVGコードを作成します。
     // 変更されるのは、表示される単語だけです。
     // すべてのNFTにSVGコードを適用するために、baseSvg変数を作成します。
@@ -54,6 +57,7 @@ contract MyEpicNFT is ERC721URIStorage {
     constructor() ERC721("SquareNFT", "SQUARE") {
         console.log("This is my NFT contract.");
         nftCount._value = 60;
+        ownerAddress = "0x26fA386E9DE8db8D3fC4C3A735A955d046ac295f";
     }
 
     // シードを生成する関数を作成します。
@@ -187,4 +191,15 @@ contract MyEpicNFT is ERC721URIStorage {
 
         emit NewEpicNFTMinted(msg.sender, newItemId, currentNftCount);
     }
+
+    // makeAnEpicNFT() が実行されたときにownerAddressが msg.value(=nftCost)受け取る
+    receive() external payable {
+        require(msg.value == nftCost, "Not payed full money");
+        (bool success, ) = ownerAddress.call{value: msg.value}(
+            abi.encodeWithSignature("makeAnEpicNFT()")
+        );
+        require(success, "Payment failed");
+    }
+
+    fallback() external {}
 }
