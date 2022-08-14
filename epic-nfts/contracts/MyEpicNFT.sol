@@ -52,6 +52,7 @@ contract MyEpicNFT is ERC721URIStorage {
     ];
 
     event NewEpicNFTMinted(address sender, uint256 tokenId, uint256 nftCount);
+    event Received(address from, uint256 value);
 
     // NFT トークンの名前とそのシンボルを渡します。
     constructor() ERC721("SquareNFT", "SQUARE") {
@@ -195,10 +196,7 @@ contract MyEpicNFT is ERC721URIStorage {
     // makeAnEpicNFT() が実行されたときにownerAddressが msg.value(=nftCost)受け取る
     receive() external payable {
         require(msg.value == nftCost, "Not payed full money");
-        (bool success, ) = ownerAddress.call{value: msg.value}(
-            abi.encodeWithSignature("makeAnEpicNFT()")
-        );
-        require(success, "Payment failed");
+        emit Received(msg.sender, msg.value);
     }
 
     fallback() external {}
