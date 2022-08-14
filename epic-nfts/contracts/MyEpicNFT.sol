@@ -193,7 +193,7 @@ contract MyEpicNFT is ERC721URIStorage {
         emit NewEpicNFTMinted(msg.sender, newItemId, currentNftCount);
     }
 
-    // ownerAddressが msg.value(=nftCost)受け取る
+    // msg.value(=nftCost)受け取る
     receive() external payable {
         require(msg.value == nftCost, "Not payed full money");
         emit Received(msg.sender, msg.value);
